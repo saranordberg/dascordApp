@@ -1,5 +1,6 @@
 package com.example.chat.chat;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,7 +22,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText username, password;
     private Button loginBtn;
     private RESTService REST = new RESTService("http://ubuntu4.javabog.dk:43232/dascord/api/");
-
+    private int returnCode;
     public LoginActivity() throws IOException {
     }
 
@@ -45,10 +46,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                     protected String doInBackground(String... params) {
-                        try { REST.Login(params[0], params[1]);
+                        try {returnCode = REST.Login(params[0], params[1]);
+                            if(returnCode == 200) {
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                finish();
+                                startActivity(intent);
+
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
                         return null;
                     }
 
@@ -57,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         super.onPostExecute(s);
                     }
                 }).execute(username.getText().toString(), password.getText().toString());
+
 
 
         } else Toast.makeText(LoginActivity.this, "Username cannot be empty", Toast.LENGTH_LONG).show();
