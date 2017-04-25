@@ -40,7 +40,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if(username.getText().toString() != "" && !username.getText().toString().isEmpty()){
+       final String usernameSt = username.getText().toString();
+
+        if(!usernameSt.isEmpty()){
 
             (new AsyncTask<String, String, String>(){
 
@@ -49,8 +51,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         try {returnCode = REST.Login(params[0], params[1]);
                             if(returnCode == 200) {
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("USERNAME", usernameSt);
                                 finish();
                                 startActivity(intent);
+
 
                             }
                         } catch (IOException e) {

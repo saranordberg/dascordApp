@@ -65,7 +65,7 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
         ChatMessage messageobj = getItem(position);
         chatText = (TextView) v.findViewById(R.id.singlemessage);
 
-        chatText.setText(messageobj.message);
+        chatText.setText(messageobj.getMessage());
 
 
         return v;

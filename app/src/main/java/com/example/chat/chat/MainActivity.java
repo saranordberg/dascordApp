@@ -10,6 +10,7 @@ import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * Created by Rasmus on 19-04-2017.
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText chatText;
     private ImageButton send;
     private Intent in;
+    private String username;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent i = getIntent();
+
+        username = i.getStringExtra("USERNAME");
 
         send = (ImageButton) findViewById(R.id.btn_send);
 
@@ -76,8 +80,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private boolean sendChatMessage() {
-        adp.add(new ChatMessage(chatText.getText().toString()));
-        chatText.setText("");
+        if(username == null){
+            Toast.makeText(this, "You need to be logged in to send messages", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if(!chatText.getText().toString().isEmpty()) {
+            adp.add(new ChatMessage(chatText.getText().toString(), username));
+            chatText.setText("");
+        }
+
 
 
         return true;
