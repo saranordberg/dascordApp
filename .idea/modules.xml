@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Chat.iml" filepath="$PROJECT_DIR$/Chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dascordApp/dascordApp.iml" filepath="$PROJECT_DIR$/dascordApp/dascordApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/dascordApp.iml" filepath="$PROJECT_DIR$/dascordApp.iml" />
     </modules>
   </component>
