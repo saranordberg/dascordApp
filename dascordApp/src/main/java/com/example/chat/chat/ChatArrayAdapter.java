@@ -3,6 +3,7 @@ package com.example.chat.chat;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -23,9 +24,8 @@ import java.util.List;
  */
 
 class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
-    private TextView chatText;
+    private TextView chatText, messageOwner, messageTimestamp;
     private List<ChatMessage> MessageList = new ArrayList<ChatMessage>();
-    private LinearLayout layout;
 
 
     public ChatArrayAdapter(Context context, int textViewResourceId, ChatMessage[] objects) {
@@ -61,11 +61,14 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
 
 
         }
-        layout = (LinearLayout) v.findViewById(R.id.message1);
         ChatMessage messageobj = getItem(position);
         chatText = (TextView) v.findViewById(R.id.singlemessage);
+        messageOwner = (TextView) v.findViewById(R.id.chat_user);
+        messageTimestamp = (TextView) v.findViewById(R.id.chat_time);
 
         chatText.setText(messageobj.getMessage());
+        messageOwner.setText(messageobj.getOwner());
+        messageTimestamp.setText(messageobj.getTimestamp());
 
 
         return v;

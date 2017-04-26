@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         list = (ListView) findViewById(R.id.listView);
         adp = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
         chatText = (EditText) findViewById(R.id.chat);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         chatText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
@@ -92,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
 
         //DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
         //Populate the navigation drawer with options
         mDrawerPanel = (RelativeLayout) findViewById(R.id.drawerPanel);
         mDrawerList = (ListView) findViewById(R.id.navList);
@@ -102,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //        selectItemFromDrawer(position);
+                mDrawerLayout.closeDrawer(mDrawerLayout);
             }
         });
     }
@@ -173,4 +183,6 @@ public class MainActivity extends AppCompatActivity {
             return view;
         }
     }
+
+
 }
