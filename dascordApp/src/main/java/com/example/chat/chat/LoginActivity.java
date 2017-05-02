@@ -24,7 +24,7 @@ import REST.RESTService;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText username, password;
     private Button loginBtn;
-    private RESTService REST = new RESTService("http://ubuntu4.javabog.dk:43232/dascord/api/");
+    private RESTService REST = new RESTService();
     private int returnCode;
     private SharedPreferences pref;
     public LoginActivity() throws IOException {
@@ -34,8 +34,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-
 
         username = (EditText) findViewById(R.id.et_username);
         password = (EditText) findViewById(R.id.pw_password);
