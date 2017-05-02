@@ -7,6 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -22,10 +25,21 @@ public class RESTService {
     private static String baseAPI = "http://ubuntu4.javabog.dk:43232/dascord/api/";
     private static URLConnection con;
     private static HttpURLConnection http;
+    private static CookieManager cookMan;
+
+    public RESTService() {
+        cookMan = new CookieManager();
+        cookMan.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        CookieHandler.setDefault(cookMan);
+
+        // TODO(Sara, Rasmus): Need to check cookie handling.
+        // The connection between calls need to use the same session cookie otherwise
+        // each call on the connection is on a new session.
+    }
 
     public static JSONObject Get(String endpoint) throws IOException, JSONException {
-        URLConnection con = new URL(baseAPI + endpoint).openConnection();
-        HttpURLConnection http = (HttpURLConnection) con;
+        con = new URL(baseAPI + endpoint).openConnection();
+        http = (HttpURLConnection) con;
         String result = "";
 
         // optional default is GET
@@ -58,10 +72,9 @@ public class RESTService {
 
     }
 
-
     public static JSONObject Post(String endpoint, Map<String, String> postBody) throws IOException, JSONException {
-        URLConnection con = new URL(baseAPI + endpoint).openConnection();
-        HttpURLConnection http = (HttpURLConnection) con;
+        con = new URL(baseAPI + endpoint).openConnection();
+        http = (HttpURLConnection) con;
 
         http.setDoOutput(true);
         http.setRequestMethod("POST");
@@ -117,7 +130,8 @@ public class RESTService {
         try {
             JSONObject response = Post("login", arguments);
             if(response.getInt("status") != 200) {
-                System.out.println(response.getInt("status") + ", error: " + response.getString("Errormessage"));
+                System.out.println(response.getInt("status") + ", error: " +
+                        response.getString("Errormessage"));
             }
             return response.getInt("status");
         } catch (IOException e) {
@@ -126,6 +140,23 @@ public class RESTService {
             e.printStackTrace();
         }
         return 500;
+    }
+
+    public static User Userinfo() throws IOException {
+        try {
+            JSONObject response = Get("userinfo");
+            if(response.getInt("status") != 200) {
+                System.out.println(response.getInt("status") + ", error: " +
+                        response.getString("Errormessage"));
+            }
+            return new User(response.getInt("id"), response.getString("displayname"),
+                    response.getString("image"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
