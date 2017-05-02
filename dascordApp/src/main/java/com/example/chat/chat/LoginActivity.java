@@ -1,6 +1,8 @@
 package com.example.chat.chat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button loginBtn;
     private RESTService REST = new RESTService("http://ubuntu4.javabog.dk:43232/dascord/api/");
     private int returnCode;
+    private SharedPreferences pref;
     public LoginActivity() throws IOException {
     }
 
@@ -43,15 +46,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
        final String usernameSt = username.getText().toString();
 
         if(!usernameSt.isEmpty()){
+            pref = getSharedPreferences("login", Context.MODE_PRIVATE);
+            final SharedPreferences.Editor edit = pref.edit();
 
             (new AsyncTask<String, String, String>(){
 
                 @Override
                     protected String doInBackground(String... params) {
-                        try {returnCode = REST.Login(params[0], params[1]);
+                        try {returnCode = RESTService.Login(params[0], params[1]);
                             if(returnCode == 200) {
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra("USERNAME", usernameSt);
+                                edit.putString("username", usernameSt);
+                                edit.commit();
                                 finish();
                                 startActivity(intent);
 

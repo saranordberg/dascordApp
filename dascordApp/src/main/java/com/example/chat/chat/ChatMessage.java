@@ -1,9 +1,5 @@
 package com.example.chat.chat;
 
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ListView;
-
-import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

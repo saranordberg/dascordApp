@@ -1,6 +1,8 @@
 package REST;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -20,15 +22,37 @@ public class RESTService {
         private static HttpURLConnection http;
 
     public RESTService(String url) throws IOException {
-        this.baseUrl = new URL(url);
-        this.con = baseUrl.openConnection();
-        this.http = (HttpURLConnection) con;
+        baseUrl = new URL(url);
+        con = baseUrl.openConnection();
+        http = (HttpURLConnection) con;
 
     }
 
 
-    public void Get(String endpoint) throws ProtocolException {
+    public static void Get(String field) throws IOException {
+        String result = "";
+        // optional default is GET
         http.setRequestMethod("GET");
+
+        //add request header
+        http.setRequestProperty(field, result);
+
+        int responseCode = http.getResponseCode();
+        System.out.println("\nSending 'GET' request to URL : " + baseUrl);
+        System.out.println("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(http.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        //print result
+        System.out.println(response.toString());
 
     }
 
