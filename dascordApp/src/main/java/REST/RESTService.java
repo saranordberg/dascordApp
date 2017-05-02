@@ -29,13 +29,14 @@ public class RESTService {
     }
 
 
-    public static void Get(String field) throws IOException {
+    public static String Get(String field) throws IOException {
         String result = "";
+        baseUrl = new URL(baseUrl + "/" + field);
         // optional default is GET
         http.setRequestMethod("GET");
 
         //add request header
-        http.setRequestProperty(field, result);
+//        http.setRequestProperty(field, result);
 
         int responseCode = http.getResponseCode();
         System.out.println("\nSending 'GET' request to URL : " + baseUrl);
@@ -52,7 +53,8 @@ public class RESTService {
         in.close();
 
         //print result
-        System.out.println(response.toString());
+        return response.toString();
+
 
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -30,9 +31,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
 
         username = (EditText) findViewById(R.id.et_username);
         password = (EditText) findViewById(R.id.pw_password);
@@ -46,8 +49,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
        final String usernameSt = username.getText().toString();
 
         if(!usernameSt.isEmpty()){
-            pref = getSharedPreferences("login", Context.MODE_PRIVATE);
-            final SharedPreferences.Editor edit = pref.edit();
 
             (new AsyncTask<String, String, String>(){
 
@@ -55,9 +56,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     protected String doInBackground(String... params) {
                         try {returnCode = RESTService.Login(params[0], params[1]);
                             if(returnCode == 200) {
+
+                                pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                                SharedPreferences.Editor editor = pref.edit();
+                                editor.putString("USERNAME", usernameSt);
+                                editor.commit();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                edit.putString("username", usernameSt);
-                                edit.commit();
                                 finish();
                                 startActivity(intent);
 

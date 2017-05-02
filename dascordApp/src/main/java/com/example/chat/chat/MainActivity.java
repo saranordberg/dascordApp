@@ -14,13 +14,13 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int id;
-    private SharedPreferences pref;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Profile"));

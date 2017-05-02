@@ -40,8 +40,8 @@ public class Chat_fragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        // pref.getString("username", username);
-        //  username = i.getStringExtra("USERNAME");
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        username = pref.getString("USERNAME", null);
         send = (ImageButton) view.findViewById(R.id.btn_send);
         list = (ListView) view.findViewById(R.id.listView);
         adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
@@ -91,7 +91,7 @@ public class Chat_fragment extends Fragment implements View.OnClickListener {
 
             return false;
         } else if (!chatText.getText().toString().isEmpty()) {
-            adp.add(new ChatMessage(chatText.getText().toString(), "Rasmus"));
+            adp.add(new ChatMessage(chatText.getText().toString(), username));
             chatText.setText("");
         }
 

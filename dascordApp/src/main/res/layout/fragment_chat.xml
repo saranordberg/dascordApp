@@ -29,6 +29,7 @@
                 android:id="@+id/chat"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
+                android:textColor="@color/colorAccent"
                 android:layout_toLeftOf="@+id/btn_send"  />
 
             <ImageButton
