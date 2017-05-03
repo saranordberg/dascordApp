@@ -26,8 +26,9 @@ public class RESTService {
     private static URLConnection con;
     private static HttpURLConnection http;
     private static CookieManager cookMan;
+    private static RESTService instance;
 
-    public RESTService() {
+    private RESTService() {
         cookMan = new CookieManager();
         cookMan.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(cookMan);
@@ -36,13 +37,15 @@ public class RESTService {
         // The connection between calls need to use the same session cookie otherwise
         // each call on the connection is on a new session.
     }
+    public static RESTService instance(){
+        if(instance == null) instance = new RESTService();
+        return instance;
+    }
 
     public static JSONObject Get(String endpoint) throws IOException, JSONException {
         con = new URL(baseAPI + endpoint).openConnection();
         http = (HttpURLConnection) con;
-        String result = "";
 
-        // optional default is GET
         http.setRequestMethod("GET");
 
         //add request header
@@ -123,37 +126,35 @@ public class RESTService {
         return response2;
     }
 
-    public static int Login(String username, String password) throws IOException {
+    public String Login(String username, String password) throws IOException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put("username", username);
         arguments.put("password", password);
         try {
             JSONObject response = Post("login", arguments);
             if(response.getInt("status") != 200) {
-                System.out.println(response.getInt("status") + ", error: " +
-                        response.getString("Errormessage"));
+                throw new IOException((response.getInt("status") + ", error: " +
+                        response.getString("Errormessage")));
             }
-            return response.getInt("status");
+            return response.getString("token");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return 500;
+        return null;
     }
 
-    public static User Userinfo() throws IOException {
+    public User Userinfo() throws IOException {
         try {
             JSONObject response = Get("userinfo");
             if(response.getInt("status") != 200) {
-                System.out.println(response.getInt("status") + ", error: " +
-                        response.getString("Errormessage"));
+                throw new IOException((response.getInt("status") + ", error: " +
+                        response.getString("Errormessage")));
             }
             return new User(response.getInt("id"), response.getString("displayname"),
-                    response.getString("image"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+                    response.optString("image"));
+        } catch (IOException | JSONException  e) {
             e.printStackTrace();
         }
         return null;

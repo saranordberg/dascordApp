@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ import java.util.List;
 class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
     private TextView chatText, messageOwner, messageTimestamp;
     private List<ChatMessage> MessageList = new ArrayList<ChatMessage>();
+    private ImageView image;
 
 
     public ChatArrayAdapter(Context context, int textViewResourceId, ChatMessage[] objects) {

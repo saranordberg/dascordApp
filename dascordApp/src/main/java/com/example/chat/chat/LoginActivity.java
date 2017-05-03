@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import REST.RESTService;
+import REST.User;
 
 /**
  * Created by sara on 18/04/2017.
@@ -25,7 +26,6 @@ import REST.RESTService;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText username, password;
     private Button loginBtn;
-    private RESTService REST = new RESTService();
     private int returnCode;
     private SharedPreferences pref;
     public LoginActivity() throws IOException {
@@ -48,41 +48,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
        final String usernameSt = username.getText().toString();
 
         if(!usernameSt.isEmpty()){
-
             (new AsyncTask<String, String, String>(){
-
                 @Override
                     protected String doInBackground(String... params) {
-                        try {returnCode = RESTService.Login(params[0], params[1]);
-                            if(returnCode == 200) {
-
-                                pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                                SharedPreferences.Editor editor = pref.edit();
-                                editor.putString("USERNAME", usernameSt);
-                                editor.commit();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                finish();
-                                Log.d("Userinfo", RESTService.Userinfo().toString());
-                                startActivity(intent);
-
-
+                        try {
+                            String token = RESTService.instance().Login(params[0], params[1]);
+                            pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("USERNAME", usernameSt);
+                            editor.putString("TOKEN", token);
+                            User user = null;
+                            try {
+                               user = RESTService.instance().Userinfo();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
+
+                            if (user != null) {
+                                editor.putString("USERNAME", user.getUsername());
+                                editor.putString("IMAGE", user.getImage());
+                            }
+
+
+                            editor.commit();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            finish();
+                            startActivity(intent);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                         return null;
                     }
-
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-                    }
                 }).execute(username.getText().toString(), password.getText().toString());
-
-
-
         } else Toast.makeText(LoginActivity.this, "Username cannot be empty", Toast.LENGTH_LONG).show();
-
     }
 }
