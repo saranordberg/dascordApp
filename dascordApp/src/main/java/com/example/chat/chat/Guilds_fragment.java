@@ -49,6 +49,7 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_guilds, container, false);
+
         return view;
     }
 
@@ -56,11 +57,13 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         guild_List = (ListView) view.findViewById(R.id.lv_guilds);
-        team_list =  (ListView) view.findViewById(R.id.lv_teams);
-        chat_list = (ListView) view.findViewById(R.id.chat_list);
+        //team_list = (ListView) view.findViewById(R.id.lv_teams);
+        //chat_list = (ListView) view.findViewById(R.id.chat_list);
+        final SharedPreferences.Editor editor = pref.edit();
 
-        chatText = (EditText) view.findViewById(R.id.chat);
-        send = (ImageButton) view.findViewById(R.id.btn_send);
+
+        //chatText = (EditText) view.findViewById(R.id.chat);
+        //send = (ImageButton) view.findViewById(R.id.btn_send);
 
         adp = new GuildArrayAdapter(view.getContext(), R.layout.guilds);
 
@@ -103,6 +106,18 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
         guild_List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                editor.putInt("GUILD", adp.getItem(i).getGuild_id());
+                editor.commit();
+                System.out.println(adp.getItem(i).getGuild_id());
+                Fragment newFragment = new Team_fragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.pager, newFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+    }
+/*
                 guild_List.setVisibility(View.INVISIBLE);
                 team_adp = new TeamArrayAdapter(view.getContext(), R.layout.teams);
                 team_list.setAdapter(team_adp);
@@ -183,14 +198,14 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
                     }
                 });
             }
-        });
-    }
+        });     */
+
 
     @Override
     public void onClick(View view) {
 
     }
-
+    /*
     private boolean sendChatMessage() {
         if (username == null) {
 
@@ -201,6 +216,6 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
         }
 
         return true;
-    }
+    }   */
 
 }

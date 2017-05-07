@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.chat.chat.Chat_fragment"
     android:orientation="vertical"
+    android:id="@+id/chat_f"
     >
 
     <!-- TODO: Update blank fragment layout -->

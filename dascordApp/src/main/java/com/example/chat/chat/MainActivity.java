@@ -28,6 +28,7 @@ import REST.User;
 public class MainActivity extends AppCompatActivity {
     private User user;
     private SharedPreferences pref;
+    public ViewPager viewPager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         //tabLayout.addTab(tabLayout.newTab().setText("Chat"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
 
@@ -106,4 +107,5 @@ public class MainActivity extends AppCompatActivity {
             return bitmap;
         }
     }
+
 }
