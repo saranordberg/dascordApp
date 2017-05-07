@@ -1,5 +1,8 @@
 package REST;
 
+import android.util.JsonToken;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +46,7 @@ public class RESTService {
         return instance;
     }
 
-    public static JSONObject Get(String endpoint) throws IOException, JSONException {
+    public static Object Get(String endpoint) throws IOException, JSONException {
         con = new URL(baseAPI + endpoint).openConnection();
         http = (HttpURLConnection) con;
 
@@ -67,11 +71,16 @@ public class RESTService {
 
         //print result
         int status = http.getResponseCode();
-        String content = response.toString();
         http.disconnect();
-        JSONObject response2 = new JSONObject(content);
-        response2.put("status", status);
-        return response2;
+        Object resp;
+        String content = response.toString();
+        if (content.startsWith("[")) {
+            resp = new JSONArray(content);
+        } else {
+            resp = new JSONObject(content).put("status", status);
+        }
+
+        return resp;
 
     }
 
@@ -126,7 +135,7 @@ public class RESTService {
         return response2;
     }
 
-    public String Login(String username, String password) throws IOException {
+    public String Login(String username, String password) throws IOException, JSONException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put("username", username);
         arguments.put("password", password);
@@ -147,7 +156,7 @@ public class RESTService {
 
     public User Userinfo() throws IOException {
         try {
-            JSONObject response = Get("userinfo");
+            JSONObject response = (JSONObject) Get("userinfo");
             if(response.getInt("status") != 200) {
                 throw new IOException((response.getInt("status") + ", error: " +
                         response.getString("Errormessage")));
@@ -155,6 +164,43 @@ public class RESTService {
             return new User(response.getInt("id"), response.getString("displayname"),
                     response.optString("image"));
         } catch (IOException | JSONException  e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Guild> Guildinfo() throws IOException {
+        ArrayList<Guild> guilds = new ArrayList<>();
+        try {
+            JSONArray response = (JSONArray) Get("guilds");
+
+            for(int i=0; i < response.length(); i++) {
+                if (response.get(i) instanceof JSONObject) {
+                    JSONObject s = (JSONObject) response.get(i);
+                    guilds.add(new Guild(s.getInt("id"), s.getInt("owner_id"), s.getString("name"),
+                            s.optString("image")));
+                }
+            }
+            return guilds;
+        } catch (IOException | JSONException  e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Team> Teaminfo(int guild_id) throws IOException {
+        ArrayList<Team> teams = new ArrayList<>();
+        try {
+            JSONArray response = (JSONArray) Get("teams/"+guild_id);
+
+            for (int i = 0; i < response.length(); i++){
+                if(response.get(i) instanceof JSONObject) {
+                    JSONObject s = (JSONObject) response.get(i);
+                    teams.add(new Team(s.getInt("id"), s.getString("name"), s.getString("topic")));
+                }
+            }
+            return teams;
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return null;

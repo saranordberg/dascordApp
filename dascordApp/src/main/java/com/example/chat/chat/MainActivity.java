@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+import REST.Guild;
 import REST.RESTService;
 import REST.User;
 

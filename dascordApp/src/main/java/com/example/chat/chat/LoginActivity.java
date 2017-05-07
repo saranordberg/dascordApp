@@ -14,7 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 import REST.RESTService;
 import REST.User;
@@ -37,7 +40,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         username = (EditText) findViewById(R.id.et_username);
+        username.setText("s153980");
         password = (EditText) findViewById(R.id.pw_password);
+        password.setText("123");
         loginBtn = (Button) findViewById(R.id.btn_login);
 
         loginBtn.setOnClickListener(this);
@@ -70,11 +75,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
 
 
+
                             editor.commit();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             finish();
                             startActivity(intent);
-                        } catch (IOException e) {
+                        } catch (IOException | JSONException e) {
                             e.printStackTrace();
                         }
                         return null;
