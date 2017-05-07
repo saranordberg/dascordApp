@@ -25,10 +25,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Guilds_fragment tab2 = new Guilds_fragment();
                 return tab2;
-            case 2:
+            /*case 2:
                 Chat_fragment tab3 = new Chat_fragment();
                 return tab3;
-
+                               */
 
 
             default:

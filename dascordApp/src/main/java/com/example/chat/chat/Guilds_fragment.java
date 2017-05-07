@@ -8,11 +8,15 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.io.IOException;
@@ -30,11 +34,16 @@ import static com.example.chat.chat.MainActivity.download;
  */
 
 public class Guilds_fragment extends Fragment implements View.OnClickListener {
-    private ListView guild_List, team_list;
+    private ListView guild_List, team_list, chat_list;
     private SharedPreferences pref;
     private GuildArrayAdapter adp;
+    private TeamArrayAdapter team_adp;
+    private ChatArrayAdapter chat_adp;
     private ArrayList<Guild> Guilds;
     private ArrayList<Team> Teams;
+    private ImageButton send;
+    private String username;
+    private EditText chatText;
 
 
     @Override
@@ -47,6 +56,12 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         guild_List = (ListView) view.findViewById(R.id.lv_guilds);
+        team_list =  (ListView) view.findViewById(R.id.lv_teams);
+        chat_list = (ListView) view.findViewById(R.id.chat_list);
+
+        chatText = (EditText) view.findViewById(R.id.chat);
+        send = (ImageButton) view.findViewById(R.id.btn_send);
+
         adp = new GuildArrayAdapter(view.getContext(), R.layout.guilds);
 
         try {
@@ -88,8 +103,9 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
         guild_List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TeamArrayAdapter team_adp = new TeamArrayAdapter(view.getContext(), R.layout.teams);
-                guild_List.setAdapter(team_adp);
+                guild_List.setVisibility(View.INVISIBLE);
+                team_adp = new TeamArrayAdapter(view.getContext(), R.layout.teams);
+                team_list.setAdapter(team_adp);
                 final int guild_id = adp.getItem(i).getGuild_id();
 
                 try {
@@ -116,16 +132,56 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
                         team_adp.add(new list_element(team.getTeam_id(), team.getTeam_name(), team.getTopic()));
                     }
                 }
-                adp.registerDataSetObserver(new DataSetObserver() {
+                team_adp.registerDataSetObserver(new DataSetObserver() {
                     public void onChanged() {
                         super.onChanged();
 
-                        guild_List.setSelection(adp.getCount() - 1);
+                        team_list.setSelection(adp.getCount() - 1);
                     }
                 }
                 );
 
                team_adp.notifyDataSetChanged();
+
+            }
+        });
+        team_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                team_list.setVisibility(View.INVISIBLE);
+                username = pref.getString("USERNAME", null);
+                chat_adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
+                chatText.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+
+                        if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+
+                            return sendChatMessage();
+                        }
+                        return false;
+                    }
+
+
+                });
+                send.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendChatMessage();
+
+                    }
+                });
+
+                chat_list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+                chat_list.setAdapter(chat_adp);
+
+                chat_adp.registerDataSetObserver(new DataSetObserver() {
+                    public void onChanged() {
+                        super.onChanged();
+
+                        chat_list.setSelection(chat_adp.getCount() - 1);
+                    }
+                });
             }
         });
     }
@@ -133,6 +189,18 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
 
+    }
+
+    private boolean sendChatMessage() {
+        if (username == null) {
+
+            return false;
+        } else if (!chatText.getText().toString().isEmpty()) {
+            chat_adp.add(new ChatMessage(chatText.getText().toString(), username));
+            chatText.setText("");
+        }
+
+        return true;
     }
 
 }
