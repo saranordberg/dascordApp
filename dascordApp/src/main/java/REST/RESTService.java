@@ -224,5 +224,25 @@ public class RESTService {
         }
         return null;
     }
+
+    public int SendMessage(ChatMessage message, int team_id) {
+        Map<String, String> arguments = new HashMap<>();
+        arguments.put("content", message.getMessage());
+        arguments.put("teamid", String.valueOf(team_id));
+
+        try {
+            JSONObject response = Post("message", arguments);
+            if(response.getInt("status") != 200) {
+                throw new IOException((response.getInt("status") + ", error: " +
+                        response.getString("Errormessage")));
+            }
+            return response.getInt("id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
 

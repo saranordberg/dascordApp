@@ -1,5 +1,6 @@
 package com.example.chat.chat;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
@@ -19,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import REST.Guild;
 import REST.RESTService;
 import REST.Team;
+import REST.User;
 
 import static com.example.chat.chat.MainActivity.download;
 
@@ -231,7 +235,7 @@ public class Guilds_fragment extends Fragment{
 
                         if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
 
-                            return sendChatMessage();
+                            return sendChatMessage(team_id);
                         }
                         return false;
                     }
@@ -241,7 +245,7 @@ public class Guilds_fragment extends Fragment{
                 send.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        sendChatMessage();
+                        sendChatMessage(team_id);
 
                     }
                 });
@@ -254,6 +258,8 @@ public class Guilds_fragment extends Fragment{
                         super.onChanged();
 
                         chat_list.setSelection(chat_adp.getCount() - 1);
+
+
                     }
                 });
             }
@@ -261,14 +267,25 @@ public class Guilds_fragment extends Fragment{
 
     }
 
-    private boolean sendChatMessage() {
+    private boolean sendChatMessage(final int team_id) {
         if (username == null) {
 
             return false;
+
+
         } else if (!chatText.getText().toString().isEmpty()) {
+            final ChatMessage message = new ChatMessage(chatText.getText().toString(), username);
 
+            (new AsyncTask<Integer, String, Integer>(){
+                @Override
+                protected Integer doInBackground(Integer... params) {
 
-            chat_adp.add(new ChatMessage(chatText.getText().toString(), username));
+                    int msgID = RESTService.instance().SendMessage(message, team_id);
+                    return msgID;
+                }
+            }).execute();
+
+            chat_adp.add(message);
             chatText.setText("");
         }
 
