@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Chat.iml" filepath="$PROJECT_DIR$/Chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dascordApp.iml" filepath="$PROJECT_DIR$/dascordApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/dascordApp/dascordApp.iml" filepath="$PROJECT_DIR$/dascordApp/dascordApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/dascordApp/dascordApp-dascordApp.iml" filepath="$PROJECT_DIR$/dascordApp/dascordApp-dascordApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dascordapp.iml" filepath="$PROJECT_DIR$/dascordapp.iml" />
     </modules>
   </component>
 </project>
