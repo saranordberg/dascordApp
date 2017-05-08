@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import com.example.chat.chat.ChatMessage;
 
 /**
  * Created by sara on 18/04/2017.
@@ -201,6 +202,24 @@ public class RESTService {
             }
             return teams;
         } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<ChatMessage> ChatInfo(int team_id) throws IOException {
+        ArrayList<ChatMessage> messages = new ArrayList<>();
+        try {
+            JSONArray response = (JSONArray) Get("messages/"+team_id);
+
+            for (int i = 0; i < response.length(); i++) {
+                if(response.get(i) instanceof JSONObject) {
+                    JSONObject s = (JSONObject) response.get(i);
+                    messages.add(new ChatMessage(s.getString("content"), s.getJSONObject("author").getString("displayname"), s.getLong("timestamp")));
+                }
+            }
+            return messages;
+        } catch (IOException |JSONException e) {
             e.printStackTrace();
         }
         return null;

@@ -20,7 +20,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import REST.Guild;
@@ -41,6 +43,7 @@ public class Guilds_fragment extends Fragment{
     private ChatArrayAdapter chat_adp;
     private ArrayList<Guild> Guilds;
     private ArrayList<Team> Teams;
+    private ArrayList<ChatMessage> Messages;
     private ImageButton send;
     private String username;
     private EditText chatText;
@@ -183,6 +186,45 @@ public class Guilds_fragment extends Fragment{
                 chat_list.setVisibility(View.VISIBLE);
                 username = pref.getString("USERNAME", null);
                 chat_adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
+                final int team_id = team_adp.getItem(i).getTeam_id();
+
+                try {
+                    Messages = new AsyncTask<ArrayList<ChatMessage>, Integer, ArrayList<ChatMessage>>() {
+                        @Override
+                        protected ArrayList<ChatMessage> doInBackground(ArrayList<ChatMessage>... arrayLists) {
+                            try {
+                                Messages = RESTService.instance().ChatInfo(team_id);
+                                return Messages;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    }.execute().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                if (Messages != null) {
+                    Collections.reverse(Messages);
+                    for (ChatMessage message : Messages) {
+                        chat_adp.add(message);
+                    }
+                }
+
+                chat_adp.registerDataSetObserver(new DataSetObserver() {
+                                                     public void onChanged() {
+                                                         super.onChanged();
+
+                                                         chat_list.setSelection(chat_adp.getCount() - 1);
+
+                                                     }
+                                                 }
+                );
+
+                chat_adp.notifyDataSetChanged();
+
                 chatText.setOnKeyListener(new View.OnKeyListener() {
                     @Override
                     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
@@ -224,6 +266,8 @@ public class Guilds_fragment extends Fragment{
 
             return false;
         } else if (!chatText.getText().toString().isEmpty()) {
+
+
             chat_adp.add(new ChatMessage(chatText.getText().toString(), username));
             chatText.setText("");
         }
