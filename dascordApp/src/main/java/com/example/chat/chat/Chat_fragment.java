@@ -20,7 +20,7 @@ import android.widget.ListView;
  * Created by Rasmus on 01-05-2017.
  */
 
-public class Chat_fragment extends Fragment implements View.OnClickListener {
+public class Chat_fragment extends Fragment {
 
 
     private ChatArrayAdapter adp;
@@ -80,10 +80,6 @@ public class Chat_fragment extends Fragment implements View.OnClickListener {
                 list.setSelection(adp.getCount() - 1);
             }
         });
-    }
-    @Override
-    public void onClick(View view) {
-
     }
 
     private boolean sendChatMessage() {

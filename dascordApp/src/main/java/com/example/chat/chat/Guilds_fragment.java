@@ -33,7 +33,7 @@ import static com.example.chat.chat.MainActivity.download;
  * Created by Rasmus on 02-05-2017.
  */
 
-public class Guilds_fragment extends Fragment implements View.OnClickListener {
+public class Guilds_fragment extends Fragment{
     private ListView guild_List, team_list, chat_list;
     private SharedPreferences pref;
     private GuildArrayAdapter adp;
@@ -44,28 +44,52 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
     private ImageButton send;
     private String username;
     private EditText chatText;
+    private Button back;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_guilds, container, false);
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        guild_List = (ListView) view.findViewById(R.id.lv_guilds);
+        team_list = (ListView) view.findViewById(R.id.old_lv_teams);
+        chat_list = (ListView) view.findViewById(R.id.chat_list);
+        chatText = (EditText) view.findViewById(R.id.chat);
+        send = (ImageButton) view.findViewById(R.id.btn_send);
+        adp = new GuildArrayAdapter(view.getContext(), R.layout.guilds);
+        back = (Button) view.findViewById(R.id.button);
+
+        back.setVisibility(View.INVISIBLE);
+        team_list.setVisibility(View.INVISIBLE);
+        send.setVisibility(View.INVISIBLE);
+        chatText.setVisibility(View.INVISIBLE);
+        chat_list.setVisibility(View.INVISIBLE);
 
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        guild_List = (ListView) view.findViewById(R.id.lv_guilds);
-        //team_list = (ListView) view.findViewById(R.id.lv_teams);
-        //chat_list = (ListView) view.findViewById(R.id.chat_list);
+       back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(chat_list.getVisibility() == View.VISIBLE && team_list.getVisibility() == view.INVISIBLE){
+                    chatText.setVisibility(View.INVISIBLE);
+                    chat_list.setVisibility(View.INVISIBLE);
+                    team_list.setVisibility(View.VISIBLE);
+                } else if(team_list.getVisibility() == View.VISIBLE && guild_List.getVisibility() == View.INVISIBLE){
+                    team_list.setVisibility(View.INVISIBLE);
+                    guild_List.setVisibility(View.VISIBLE);
+                    back.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
         final SharedPreferences.Editor editor = pref.edit();
 
 
-        //chatText = (EditText) view.findViewById(R.id.chat);
-        //send = (ImageButton) view.findViewById(R.id.btn_send);
 
-        adp = new GuildArrayAdapter(view.getContext(), R.layout.guilds);
 
         try {
             Guilds = new AsyncTask<ArrayList<Guild>, Integer, ArrayList<Guild>>() {
@@ -88,6 +112,7 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
 
         if (Guilds != null) {
             for (Guild guild : Guilds) {
+                System.out.println("Image string: " + guild.getImage());
                 adp.add(new list_element(guild.getGuildName(), download(guild.getImage()), guild.getId()));
             }
         }
@@ -106,19 +131,9 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
         guild_List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                editor.putInt("GUILD", adp.getItem(i).getGuild_id());
-                editor.commit();
-                System.out.println(adp.getItem(i).getGuild_id());
-                Fragment newFragment = new Team_fragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.pager, newFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-    }
-/*
+                back.setVisibility(View.VISIBLE);
                 guild_List.setVisibility(View.INVISIBLE);
+                team_list.setVisibility(View.VISIBLE);
                 team_adp = new TeamArrayAdapter(view.getContext(), R.layout.teams);
                 team_list.setAdapter(team_adp);
                 final int guild_id = adp.getItem(i).getGuild_id();
@@ -148,15 +163,15 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 team_adp.registerDataSetObserver(new DataSetObserver() {
-                    public void onChanged() {
-                        super.onChanged();
+                                                     public void onChanged() {
+                                                         super.onChanged();
 
-                        team_list.setSelection(adp.getCount() - 1);
-                    }
-                }
+                                                         team_list.setSelection(adp.getCount() - 1);
+                                                     }
+                                                 }
                 );
 
-               team_adp.notifyDataSetChanged();
+                team_adp.notifyDataSetChanged();
 
             }
         });
@@ -164,6 +179,8 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 team_list.setVisibility(View.INVISIBLE);
+                chatText.setVisibility(View.VISIBLE);
+                chat_list.setVisibility(View.VISIBLE);
                 username = pref.getString("USERNAME", null);
                 chat_adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
                 chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -198,14 +215,10 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
                     }
                 });
             }
-        });     */
-
-
-    @Override
-    public void onClick(View view) {
+        });
 
     }
-    /*
+
     private boolean sendChatMessage() {
         if (username == null) {
 
@@ -216,6 +229,6 @@ public class Guilds_fragment extends Fragment implements View.OnClickListener {
         }
 
         return true;
-    }   */
+    }
 
 }
