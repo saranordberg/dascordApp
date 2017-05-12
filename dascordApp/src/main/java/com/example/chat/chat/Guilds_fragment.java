@@ -1,14 +1,11 @@
 package com.example.chat.chat;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +18,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -31,7 +28,8 @@ import java.util.concurrent.ExecutionException;
 import REST.Guild;
 import REST.RESTService;
 import REST.Team;
-import REST.User;
+import WebSocket.WebSocketService;
+import WebSocket.WebsocketCallback;
 
 import static com.example.chat.chat.MainActivity.download;
 
@@ -39,7 +37,7 @@ import static com.example.chat.chat.MainActivity.download;
  * Created by Rasmus on 02-05-2017.
  */
 
-public class Guilds_fragment extends Fragment{
+public class Guilds_fragment extends Fragment {
     private ListView guild_List, team_list, chat_list;
     private SharedPreferences pref;
     private GuildArrayAdapter adp;
@@ -77,14 +75,15 @@ public class Guilds_fragment extends Fragment{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-       back.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(chat_list.getVisibility() == View.VISIBLE && team_list.getVisibility() == view.INVISIBLE){
+                if (chat_list.getVisibility() == View.VISIBLE && team_list.getVisibility() == view.INVISIBLE) {
                     chatText.setVisibility(View.INVISIBLE);
                     chat_list.setVisibility(View.INVISIBLE);
                     team_list.setVisibility(View.VISIBLE);
-                } else if(team_list.getVisibility() == View.VISIBLE && guild_List.getVisibility() == View.INVISIBLE){
+
+                } else if (team_list.getVisibility() == View.VISIBLE && guild_List.getVisibility() == View.INVISIBLE) {
                     team_list.setVisibility(View.INVISIBLE);
                     guild_List.setVisibility(View.VISIBLE);
                     back.setVisibility(View.INVISIBLE);
@@ -94,8 +93,6 @@ public class Guilds_fragment extends Fragment{
 
 
         final SharedPreferences.Editor editor = pref.edit();
-
-
 
 
         try {
@@ -119,7 +116,6 @@ public class Guilds_fragment extends Fragment{
 
         if (Guilds != null) {
             for (Guild guild : Guilds) {
-                System.out.println("Image string: " + guild.getImage());
                 adp.add(new list_element(guild.getGuildName(), download(guild.getImage()), guild.getId()));
             }
         }
@@ -191,7 +187,31 @@ public class Guilds_fragment extends Fragment{
                 username = pref.getString("USERNAME", null);
                 chat_adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
                 final int team_id = team_adp.getItem(i).getTeam_id();
+                try {
+                    WebSocketService.getInstance(getContext()).closeConnection();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                WebSocketService.getInstance(getContext()).connectWebSocket();
+                WebSocketService.getInstance(getContext()).listenCallback("MESSAGE_CREATE", new WebsocketCallback() {
+                    @Override
+                    public void run(final JSONObject payload) throws JSONException {
+                        System.out.println("MESSAGE_CREATE Event detected: " + payload.toString());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ChatMessage newMessage = null;
+                                try {
+                                    newMessage = new ChatMessage(payload.getString("content"), payload.getJSONObject("author").getString("displayname"), payload.getLong("timestamp"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                chat_adp.add(newMessage);
+                            }
+                        });
 
+                    }
+                });
                 try {
                     Messages = new AsyncTask<ArrayList<ChatMessage>, Integer, ArrayList<ChatMessage>>() {
                         @Override
@@ -276,7 +296,7 @@ public class Guilds_fragment extends Fragment{
         } else if (!chatText.getText().toString().isEmpty()) {
             final ChatMessage message = new ChatMessage(chatText.getText().toString(), username);
 
-            (new AsyncTask<Integer, String, Integer>(){
+            (new AsyncTask<Integer, String, Integer>() {
                 @Override
                 protected Integer doInBackground(Integer... params) {
 

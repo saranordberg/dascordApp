@@ -18,9 +18,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-import REST.Guild;
-import REST.RESTService;
 import REST.User;
+
 
 /**
  * Created by Rasmus on 19-04-2017.
@@ -48,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
-
+//        WebSocketService.getInstance(getBaseContext()).listenCallback("READY", new WebsocketCallback() {
+//            @Override
+//            public void run(JSONObject payload) {
+//                System.out.println("READY Event detected: " + payload.toString());
+//            }
+//        });
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabUnselected(TabLayout.Tab tab) {
 
             }
+
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
@@ -75,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings){
+        if (id == R.id.action_settings) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -115,4 +120,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
+
+
 }
