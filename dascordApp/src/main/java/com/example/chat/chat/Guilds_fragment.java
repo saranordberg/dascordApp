@@ -187,7 +187,7 @@ public class Guilds_fragment extends Fragment {
                 username = pref.getString("USERNAME", null);
                 chat_adp = new ChatArrayAdapter(view.getContext(), R.layout.chat);
                 final int team_id = team_adp.getItem(i).getTeam_id();
-                try {
+               /* try {
                     WebSocketService.getInstance(getContext()).closeConnection();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -211,7 +211,7 @@ public class Guilds_fragment extends Fragment {
                         });
 
                     }
-                });
+                });     */
                 try {
                     Messages = new AsyncTask<ArrayList<ChatMessage>, Integer, ArrayList<ChatMessage>>() {
                         @Override
